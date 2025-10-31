@@ -1,0 +1,16 @@
+title: Establish Tri-Witness Quorum Protocol
+context:
+  goal: "Validate that human, AI, and Earth witnesses align before sealing Cooling Ledger entries."
+  artifacts:
+    - docs/summary.md
+    - docs/protocols.yaml
+    - docs/floors.yaml
+deliverables:
+  - platform/tri-witness/quorum.py
+  - platform/tri-witness/checklist.md
+  - tests/test_tri_witness.py
+acceptance_criteria:
+  - "check_quorum(human, ai, earth) returns float confidence and boolean quorum"
+  - "Quorum requires ≥0.95 alignment and logs SABARPause otherwise"
+  - "Checklist documents verification steps"
+  - "pytest -q passes"

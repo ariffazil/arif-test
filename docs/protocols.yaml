@@ -1,0 +1,18 @@
+TEARFRAME:
+  description: "Telemetry Enforcement and Resilience Framework"
+  steps:
+    - "Collect metrics from agent execution"
+    - "Validate against floors"
+    - "Record in Cooling Ledger"
+SABAR:
+  description: "Safety and Balance Assurance Routine"
+  steps:
+    - "Detect Ψ below psi_min"
+    - "Trigger SABARPause"
+    - "Escalate for human review"
+Phoenix-72:
+  description: "72-hour reflective cooldown before high-impact deploys"
+  steps:
+    - "Initiate tri-witness quorum"
+    - "Run post-merge retrospective"
+    - "Authorize deployment"

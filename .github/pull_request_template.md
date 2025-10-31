@@ -1,0 +1,11 @@
+### Cooling Ledger
+- [ ] Truth ≥ 0.99   | measured: __
+- [ ] Peace² ≥ 1.00  | measured: __
+- [ ] κᵣ ≥ 0.95      | measured: __
+- [ ] ΔS ≥ 0         | measured: __
+- [ ] RASA ✓ / Amanah 🔐
+- [ ] Tri-Witness ≥ 0.95 (attach check_quorum() output)
+
+### Tests
+- [ ] pytest passed • coverage ≥ 85%
+- [ ] writes zkPC receipt id on seal()

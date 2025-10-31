@@ -1,0 +1,16 @@
+title: Implement Ψ Computation Engine
+context:
+  goal: "Provide deterministic Ψ scoring and SABAR pause semantics for all agents."
+  artifacts:
+    - docs/summary.md
+    - docs/floors.yaml
+    - docs/protocols.yaml
+deliverables:
+  - platform/psi/psi_score.py
+  - platform/psi/exceptions.py
+  - tests/test_psi_engine.py
+acceptance_criteria:
+  - "psi_from(metrics: dict) returns float within [0, 2]"
+  - "Values below psi_min raise SABARPause"
+  - "Metrics normalization honors floors definitions"
+  - "pytest -q passes"

@@ -53,6 +53,11 @@ Current Apex Prime verdict aligned state:
 
 ## Verification
 
-- `pytest -q` (latest run) — all unit and integration tests pass locally.
+| Check | Result |
+| --- | --- |
+| `pytest -q` | ✅ (2025-11-01 00:30:25Z, commit 2e6413f)
+
+The verification timestamp reflects the latest manual run. Operators should rerun the suite after significant changes and
+update this table with the new UTC time and commit hash.
 
 Consult `docs/runbook.md` for operational procedures while these milestones are in progress.

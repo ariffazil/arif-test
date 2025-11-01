@@ -15,6 +15,8 @@ the Cooling Ledger.
 5. **Core-5 Workstreams**: Dedicated taskfiles orchestrate AGI planning, empathy enforcement, Amanah adjudication, routing, and
    equilibrium.
 6. **CI Discipline**: Pull requests must satisfy the Cooling Ledger checklist, run pytest, and maintain ≥85% coverage.
+7. **Ledger Integrity**: Cooling Ledger writes redact sensitive content, derive idempotency keys from plan and provenance data,
+   and reject replay attempts that reuse the same plan/hash pair.
 
 Consult `docs/protocols.yaml` for TEARFRAME, SABAR, and Phoenix-72 process references. For architectural context review
 `docs/architecture.md`, and use `docs/runbook.md` plus `docs/amanah_eula.md` when operating the platform.

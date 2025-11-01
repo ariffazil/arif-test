@@ -48,6 +48,15 @@ for line in ledger_path.read_text(encoding="utf-8").splitlines()[-5:]:
 If a replay error occurs, verify that the incoming request reuses an existing `plan_id`/hash pair. Differentiate new attempts by
 adjusting the draft text or by clearing the idempotency key when appropriate.
 
+### Ledger invariants checklist
+
+- **Sanitisation** – All notes and metadata are redacted for emails and long numeric strings before writes. Review suspicious
+  fields in-memory rather than persisting raw inputs.
+- **Idempotency provenance** – Keys are derived from `plan_id`, `route_history`, and any seed hashes. When altering inputs,
+  update at least one of these components to avoid false-positive rejections.
+- **Replay guard** – The ledger rejects duplicates that reuse the same `(plan_id, hash)` pair. Investigate unexpected
+  rejections to confirm whether a previous seal already covers the plan.
+
 ## 4. Manual Phoenix-72 audit
 
 Until the scheduled job is automated, run a manual audit to summarise the last 72 hours:

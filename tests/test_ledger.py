@@ -1,5 +1,7 @@
 import json
 
+import pytest
+
 from platform.cooling_ledger.sdk import seal, write_entry
 
 
@@ -41,7 +43,7 @@ def test_write_entry_respects_idempotency(tmp_path, monkeypatch):
         metrics,
         note="seed",
         idempotency_key=key,
-        metadata={"plan_id": "abc123", "seeded": True},
+        metadata={"plan_id": "abc123", "seeded": True, "contact": "care@example.com"},
     )
     second_hash = write_entry(
         "integration",
@@ -59,6 +61,39 @@ def test_write_entry_respects_idempotency(tmp_path, monkeypatch):
     record = json.loads(lines[0])
     assert record["idempotency_key"] == key
     assert record["metadata"]["plan_id"] == "abc123"
+    assert record["metadata"]["contact"] == "[redacted-email]"
+
+
+def test_write_entry_redacts_sensitive_tokens(tmp_path, monkeypatch):
+    ledger_path = tmp_path / "ledger.jsonl"
+    monkeypatch.setenv("ARIFOS_LEDGER_PATH", str(ledger_path))
+
+    note = "Reach me at heal@care.org and call 123456789012"
+    metrics = {"truth": 1.0, "peace2": 1.1, "kappa_r": 1.0, "deltaS": 0.1, "rasa": 0.95, "amanah": 0.96}
+
+    write_entry(
+        "arif-asi",
+        metrics,
+        note=note,
+        metadata={"plan_id": "plan-1", "notes": ["Email heal@care.org", "id 987654321"]},
+    )
+
+    record = json.loads(ledger_path.read_text(encoding="utf-8").strip())
+    assert "[redacted-email]" in record["note"]
+    assert "[redacted-number]" in record["note"]
+    assert record["metadata"]["notes"][0] == "Email [redacted-email]"
+    assert record["metadata"]["notes"][1] == "id [redacted-number]"
+
+
+def test_write_entry_rejects_replay_by_plan_id(tmp_path, monkeypatch):
+    ledger_path = tmp_path / "ledger.jsonl"
+    monkeypatch.setenv("ARIFOS_LEDGER_PATH", str(ledger_path))
+
+    metrics = {"truth": 1.0, "peace2": 1.1, "kappa_r": 1.0, "deltaS": 0.1, "rasa": 0.95, "amanah": 0.96}
+    write_entry("integration", metrics, metadata={"plan_id": "plan-dup"})
+
+    with pytest.raises(ValueError):
+        write_entry("integration", metrics, metadata={"plan_id": "plan-dup"})
 
 
 def test_seal_returns_base58_identifier():

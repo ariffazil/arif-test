@@ -4,6 +4,7 @@ from __future__ import annotations
 import hashlib
 import json
 import os
+import re
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Dict, Mapping, Optional
@@ -50,6 +51,48 @@ def _existing_hash_for_key(path: Path, key: str) -> Optional[str]:
     return None
 
 
+_EMAIL_PATTERN = re.compile(r"[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}")
+_DIGIT_PATTERN = re.compile(r"\b\d{6,}\b")
+
+
+def _redact_text(value: str) -> str:
+    """Return a privacy-safe representation of ``value``."""
+
+    redacted = _EMAIL_PATTERN.sub("[redacted-email]", value)
+    redacted = _DIGIT_PATTERN.sub("[redacted-number]", redacted)
+    return redacted
+
+
+def _sanitize_metadata(metadata: Mapping[str, Any]) -> Dict[str, Any]:
+    def _clean(value: Any) -> Any:
+        if isinstance(value, str):
+            return _redact_text(value)
+        if isinstance(value, Mapping):
+            return {key: _clean(inner) for key, inner in value.items()}
+        if isinstance(value, list):
+            return [_clean(item) for item in value]
+        return value
+
+    return {key: _clean(value) for key, value in metadata.items()}
+
+
+def _replay_exists(path: Path, plan_id: Optional[str], content_hash: str) -> bool:
+    if not plan_id or not content_hash or not path.exists():
+        return False
+    with path.open("r", encoding="utf-8") as handle:
+        for line in handle:
+            try:
+                payload = json.loads(line)
+            except json.JSONDecodeError:  # pragma: no cover - guardrail
+                continue
+            if payload.get("hash") != content_hash:
+                continue
+            metadata = payload.get("metadata") or {}
+            if metadata.get("plan_id") == plan_id:
+                return True
+    return False
+
+
 def write_entry(
     agent: str,
     metrics: Mapping[str, float],
@@ -67,18 +110,33 @@ def write_entry(
 
     timestamp = datetime.now(timezone.utc).isoformat()
     metrics_copy: Dict[str, float] = dict(metrics)
+    redacted_note = _redact_text(note)
     payload: Dict[str, Any] = {
         "agent": agent,
         "metrics": metrics_copy,
-        "note": note,
+        "note": redacted_note,
     }
     if idempotency_key is not None:
         payload["idempotency_key"] = idempotency_key
     if metadata:
-        payload["metadata"] = dict(metadata)
+        sanitized_metadata = _sanitize_metadata(metadata)
+        payload["metadata"] = sanitized_metadata
+    else:
+        sanitized_metadata = None
 
     canonical_json = json.dumps(payload, sort_keys=True, separators=(",", ":"))
     content_hash = hashlib.sha256(canonical_json.encode("utf-8")).hexdigest()
+
+    plan_id = None
+    if sanitized_metadata:
+        potential_plan_id = sanitized_metadata.get("plan_id")
+        if isinstance(potential_plan_id, str) and potential_plan_id:
+            plan_id = potential_plan_id
+
+    if _replay_exists(ledger_path, plan_id, content_hash):
+        raise ValueError(
+            "Cooling Ledger replay detected for plan_id and content hash pair."
+        )
 
     record: Dict[str, Any] = {
         **payload,

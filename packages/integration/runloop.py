@@ -38,8 +38,18 @@ class RunloopResult:
     def __post_init__(self) -> None:  # pragma: no cover - trivial validation
         if self.status not in {"sealed", "delay"}:
             raise ValueError(f"Unexpected status: {self.status}")
+        if not isinstance(self.metrics, Metrics):
+            raise TypeError("metrics must be a Metrics instance")
+        if not isinstance(self.plan_id, str) or not self.plan_id:
+            raise ValueError("plan_id must be a non-empty string")
         if not isinstance(self.route_history, list):
             raise ValueError("route_history must be list")
+        if any(not isinstance(step, str) or not step for step in self.route_history):
+            raise ValueError("route_history entries must be non-empty strings")
+        if self.seeded and not self.seed_hash:
+            raise ValueError("seeded runs must include a seed_hash")
+        if "plan_id" not in self.plan or self.plan.get("plan_id") != self.plan_id:
+            raise ValueError("plan payload must include matching plan_id")
         if self.status == "sealed" and not self.seal_id:
             raise ValueError("sealed results require a seal id")
         if self.status == "delay" and self.seal_id is not None:
@@ -162,13 +172,18 @@ def runloop(task: str, *, initial_draft: Optional[str] = None) -> Dict[str, Any]
         raise SABARPause("EEE limiter blocked the run due to repeated near-threshold Ψ.")
 
     draft_hash = _hash_text(draft)
+    final_route_history = route_history + ["integration"]
     metadata = {
         "plan_id": plan_id,
         "seeded": seeded,
         "seed_hash": seed_hash,
-        "route_history": route_history + ["integration"],
+        "route_history": final_route_history,
     }
-    idempotency_key = f"integration:{plan_id}:{draft_hash}:{chosen}"
+    route_signature = hashlib.sha256("|".join(final_route_history).encode("utf-8")).hexdigest()[:16]
+    seed_segment = seed_hash or "noseed"
+    idempotency_key = (
+        f"integration:{plan_id}:{draft_hash}:{chosen}:{seed_segment}:{route_signature}"
+    )
     seal_id = seal_if_lawful(
         "integration",
         metrics,

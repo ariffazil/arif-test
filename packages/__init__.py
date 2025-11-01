@@ -8,6 +8,7 @@ underscore variants exclusively.
 """
 
 __all__ = [
+    "arif_agi",
     "arif_asi",
     "apex_prime",
     "compass_888",

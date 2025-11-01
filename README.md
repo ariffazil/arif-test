@@ -5,11 +5,11 @@ ArifOS Codex is a monorepo scaffold prepared for orchestrating Codex-driven work
 ## Structure
 
 - `packages/`
-  - `arif-agi/`
-  - `arif-asi/`
-  - `apex-prime/`
-  - `compass-888/`
-  - `eee-777/`
+  - `arif_agi/`
+  - `arif_asi/`
+  - `apex_prime/`
+  - `compass_888/`
+  - `eee_777/`
 - `platform/`
   - `cooling-ledger/`
   - `tri-witness/`

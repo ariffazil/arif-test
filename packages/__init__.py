@@ -1,11 +1,10 @@
 """Support modules for ArifOS agent packages.
 
-The repository exposes both hyphenated package directories (to align with the
-original governance naming) and underscore-based importable modules.  The
-underscore variants host the actual implementation so that Python imports can
-resolve cleanly, while the hyphenated directories simply re-export the public
-APIs.  Tests and runtime code should import from the underscore modules, e.g.
-``packages.arif_asi``.
+All importable modules use Python-friendly underscore names (``arif_asi``,
+``apex_prime`` and so on).  Earlier revisions also stored hyphenated directory
+names to mirror the governance terminology, but those shims have been removed
+so that imports resolve deterministically.  Runtime code should import from the
+underscore variants exclusively.
 """
 
 __all__ = [

@@ -1,6 +1,8 @@
 """Structured planning heuristics for the Arif-AGI agent."""
 from __future__ import annotations
 
+import hashlib
+import json
 from dataclasses import asdict, dataclass
 from typing import Dict, List
 
@@ -28,6 +30,11 @@ class Plan:
             "steps": [asdict(step) for step in self.steps],
             "reflection": self.reflection,
         }
+
+
+def _plan_id_from_dict(payload: Dict[str, object]) -> str:
+    canonical = json.dumps(payload, sort_keys=True, separators=(",", ":"))
+    return hashlib.sha256(canonical.encode("utf-8")).hexdigest()[:16]
 
 
 def plan_and_reason(task: str) -> Dict[str, object]:
@@ -61,7 +68,9 @@ def plan_and_reason(task: str) -> Dict[str, object]:
         " collaboration while documenting outcomes in the Cooling Ledger."
     )
     plan = Plan(task=normalized, steps=steps, reflection=reflection)
-    return plan.as_dict()
+    plan_dict = plan.as_dict()
+    plan_dict["plan_id"] = _plan_id_from_dict(plan_dict)
+    return plan_dict
 
 
 __all__ = ["plan_and_reason", "Plan", "PlanStep"]

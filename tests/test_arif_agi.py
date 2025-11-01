@@ -13,6 +13,7 @@ def test_plan_and_reason_structure():
     assert plan["task"].startswith("Guide")
     assert len(plan["steps"]) >= 2
     assert all({"phase", "intent", "focus"} <= step.keys() for step in plan["steps"])
+    assert len(plan["plan_id"]) == 16
 
 
 def test_evaluate_metrics_returns_metrics():
@@ -35,12 +36,14 @@ def test_respond_seals_and_logs(monkeypatch, tmp_path):
     assert isinstance(outcome, AGIResponse)
     assert "Task:" in outcome.draft
     assert outcome.seal_id
+    assert outcome.plan_id == outcome.plan["plan_id"]
     entries = ledger_path.read_text(encoding="utf-8").strip().splitlines()
     assert len(entries) == 1
     record = json.loads(entries[0])
     assert record["agent"] == "arif-agi"
-    assert "hash" in record
-    assert record["metrics"]["peace2"] >= 1.0
+    assert record["metadata"]["plan_id"] == outcome.plan_id
+    assert record["metadata"]["seeded"] is False
+    assert record["idempotency_key"].startswith("arif-agi:")
     assert pytest.approx(record["metrics"]["psi"], rel=1e-6) == outcome.psi
 
 

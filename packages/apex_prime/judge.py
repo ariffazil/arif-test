@@ -2,7 +2,7 @@
 from __future__ import annotations
 
 from dataclasses import asdict, is_dataclass
-from typing import Any, Dict, Mapping
+from typing import Any, Dict, Mapping, Optional
 
 from platform.cooling_ledger.sdk import seal, write_entry
 from platform.psi.psi_score import Metrics, SABARPause, get_floors, meets_floors, psi_from
@@ -36,7 +36,15 @@ def judge(metrics: Mapping[str, Any] | Metrics) -> Dict[str, Any]:
     return {"allowed": True, "reason": f"Ψ={psi:.3f} satisfies governance."}
 
 
-def seal_if_lawful(agent: str, metrics: Mapping[str, Any] | Metrics, note: str = "") -> str:
+def seal_if_lawful(
+    agent: str,
+    metrics: Mapping[str, Any] | Metrics,
+    note: str = "",
+    *,
+    plan_id: Optional[str] = None,
+    idempotency_key: Optional[str] = None,
+    metadata: Optional[Mapping[str, Any]] = None,
+) -> str:
     """Persist a Cooling Ledger entry and return the zkPC receipt when lawful."""
 
     floors = get_floors()
@@ -50,7 +58,18 @@ def seal_if_lawful(agent: str, metrics: Mapping[str, Any] | Metrics, note: str =
     payload = asdict(normalized)
     payload["psi"] = psi
 
-    content_hash = write_entry(agent, payload, note=note)
+    merged_metadata: Dict[str, Any] = dict(metadata or {})
+    if plan_id is not None:
+        merged_metadata.setdefault("plan_id", plan_id)
+    merged_metadata.setdefault("agent", agent)
+
+    content_hash = write_entry(
+        agent,
+        payload,
+        note=note,
+        idempotency_key=idempotency_key,
+        metadata=merged_metadata if merged_metadata else None,
+    )
     return seal(content_hash)
 
 

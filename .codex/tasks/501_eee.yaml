@@ -1,0 +1,18 @@
+title: "EEE-777 — Equilibrium Engine (Rate-limit · Phoenix-72) v1"
+context:
+  goal: "Stabilize the system: rate-limit risky drafts, provide SABAR orchestration, and implement Phoenix-72 audit hooks."
+  artifacts:
+    - docs/protocols.yaml
+    - docs/floors.yaml
+deliverables:
+  - packages/eee-777/__init__.py
+  - packages/eee-777/eee.py
+  - tests/test_eee.py
+acceptance_criteria:
+  - "limiter(agent, metrics) returns 'allow'|'delay'|'block' using floors and recent ledger activity."
+  - "sabar_orchestrate(draft, metrics) returns cooled draft or raises SABARPause if unfixable."
+  - "phoenix_schedule() emits next audit timestamp (now + 72h) with ISO string."
+  - "pytest -q passes; coverage ≥ 85%."
+notes:
+  - "Rate-limit heuristic: if Ψ fluctuates near threshold, suggest delay + ASI tune; if repeated fails, block."
+  - "All pure-Python, deterministic."

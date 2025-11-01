@@ -1,0 +1,17 @@
+title: "Apex Prime (Soul) — Amanah Judge & Refusal-First v1"
+context:
+  goal: "Install refusal-first firewall and sealing guard that enforces floors, raises SABARPause, and writes zkPC receipt."
+  artifacts:
+    - docs/floors.yaml
+    - docs/protocols.yaml
+deliverables:
+  - packages/apex-prime/__init__.py
+  - packages/apex-prime/judge.py
+  - tests/test_apex_prime.py
+acceptance_criteria:
+  - "judge(metrics) returns {'allowed': bool, 'reason': str} and blocks when any floor fails."
+  - "seal_if_lawful() writes Cooling Ledger entry + returns seal_id when allowed; raises SABARPause when not."
+  - "pytest -q passes; coverage ≥ 85%."
+notes:
+  - "Import SABARPause from platform.psi.psi_score; reuse platform.cooling_ledger.sdk.write_entry/seal."
+  - "No network calls; deterministic behavior."

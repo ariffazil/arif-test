@@ -51,4 +51,8 @@ Current Apex Prime verdict aligned state:
 3. **Task 803 – Phoenix-72 Job**: automate 72 hour ledger rollups, drift detection, and report generation.
 4. *(Optional)* **Task 806 – Constitutional Wrapper**: sign and export ledger receipts for external audit trails.
 
+## Verification
+
+- `pytest -q` (latest run) — all unit and integration tests pass locally.
+
 Consult `docs/runbook.md` for operational procedures while these milestones are in progress.

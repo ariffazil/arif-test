@@ -37,6 +37,7 @@ Set `ARIFOS_LEDGER_PATH` to redirect ledger writes during local experiments.
 - [`docs/architecture.md`](docs/architecture.md) – Core-5 component map, data flow, and extensibility seams.
 - [`docs/runbook.md`](docs/runbook.md) – operational checklist for running the system day to day.
 - [`docs/amanah_eula.md`](docs/amanah_eula.md) – usage covenant and incident response expectations.
+- [`docs/status.md`](docs/status.md) – live completion metrics, health snapshot, and upcoming milestones.
 - [`docs/floors.yaml`](docs/floors.yaml) – TEARFRAME thresholds consumed by the Psi engine.
 - [`docs/protocols.yaml`](docs/protocols.yaml) – TEARFRAME, SABAR, and Phoenix-72 process references.
 

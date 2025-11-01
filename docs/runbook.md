@@ -3,6 +3,8 @@
 This runbook captures the day-to-day operations required to keep ArifOS Codex healthy. All commands assume you are at the root of
 the repository.
 
+Consult [`docs/status.md`](status.md) for current completion metrics and system health before beginning a new operations cycle.
+
 ## 1. Prepare the environment
 
 ```bash

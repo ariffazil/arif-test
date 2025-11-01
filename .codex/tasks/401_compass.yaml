@@ -1,0 +1,18 @@
+title: "Compass-888 — Ethical Routing & Noise Filter v1"
+context:
+  goal: "Create a router that selects the next module (AGI/ASI/APEX) based on metrics and task intent; filter noise."
+  artifacts:
+    - docs/floors.yaml
+    - docs/protocols.yaml
+deliverables:
+  - packages/compass-888/__init__.py
+  - packages/compass-888/compass.py
+  - tests/test_compass.py
+acceptance_criteria:
+  - "Given low Truth or ΔS<0 → route='arif-agi' (needs reasoning)."
+  - "Given Peace²<1 or κᵣ<floors.kappa_r → route='arif-asi' (needs cooling/tone)."
+  - "Given all floors pass → route='apex-prime' (ready to judge/seal)."
+  - "Noise filter: compass.noise_score(text) ∈ [0,1]; route avoids high-noise drafts."
+  - "pytest -q passes; coverage ≥ 85%."
+notes:
+  - "Keep logic transparent and testable; no heavy ML. Prefer rule+simple similarity scoring."

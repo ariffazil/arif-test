@@ -1,0 +1,17 @@
+title: Build ΔS Planning Engine for arif-agi
+context:
+  goal: "Implement planning + reflection hooks that respect TEARFRAME floors."
+  artifacts:
+    - docs/summary.md
+    - docs/floors.yaml
+    - docs/protocols.yaml
+deliverables:
+  - packages/arif-agi/agent.py
+  - packages/arif-agi/planner.py
+  - packages/arif-agi/metrics.py
+  - tests/test_arif_agi.py
+acceptance_criteria:
+  - "respond() returns final draft string and raises SABARPause when Ψ < psi_min"
+  - "plan_and_reason() produces structured plan with ≥2 steps"
+  - "evaluate_metrics() yields Metrics dataclass aligned with docs/floors.yaml"
+  - "pytest -q passes"

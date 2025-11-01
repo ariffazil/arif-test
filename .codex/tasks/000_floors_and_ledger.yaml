@@ -1,0 +1,16 @@
+title: Implement Core Floors + Cooling Ledger SDK
+context:
+  goal: "Enforce TEARFRAME floors & log Ψ metrics across all agents."
+  artifacts:
+    - docs/summary.md
+    - docs/floors.yaml
+    - docs/protocols.yaml
+deliverables:
+  - platform/cooling-ledger/sdk.py
+  - platform/psi/psi_score.py
+  - platform/tri-witness/quorum.py
+  - tests/test_ledger_and_floors.py
+acceptance_criteria:
+  - "psi_from() returns Ψ in [0, 2] and blocks < 0.95 by raising SabARPause"
+  - "all write_entry() calls persist hash+timestamp"
+  - "pytest -q passes; coverage ≥ 85%"

@@ -1,0 +1,18 @@
+title: "ASi (Heart) — Peace² · κᵣ Conductor v1"
+context:
+  goal: "Add an empathy/governance layer that tunes tone and checks Peace² and κᵣ before seal."
+  artifacts:
+    - docs/floors.yaml
+    - docs/protocols.yaml
+deliverables:
+  - packages/arif-asi/__init__.py
+  - packages/arif-asi/asi.py
+  - tests/test_asi.py
+acceptance_criteria:
+  - "compute_conductance(text_a, text_b) returns κᵣ in [0, 1.5] and ≥ floors.kappa_r for aligned content."
+  - "assess_tone(text) returns dict{rasa, peace2_hint} with rasa≥floors.rasa for compassionate text."
+  - "tune(text, target_peace2=1.0) increases peace2_hint when below target without reducing truth score stub."
+  - "pytest -q passes; coverage ≥ 85%."
+notes:
+  - "You may approximate κᵣ using semantic similarity + penalty for aggression markers; keep pure-Python (no heavy deps)."
+  - "Use floors from docs/floors.yaml; when peace2_hint<1.0 or κᵣ<floors.kappa_r, return suggestion patch."

@@ -1,0 +1,19 @@
+title: "Core-5 Integration — Mind·Heart·Soul·Compass·EEE v1"
+context:
+  goal: "Wire the five packages into a single flow: AGI draft → Compass route → ASI tune (if needed) → Apex judge+seal → EEE stabilizer."
+  artifacts:
+    - docs/floors.yaml
+    - docs/protocols.yaml
+deliverables:
+  - packages/integration/__init__.py
+  - packages/integration/runloop.py
+  - tests/test_integration.py
+acceptance_criteria:
+  - "Happy path: truthful draft with Peace²≥1 routes to apex-prime and returns seal_id."
+  - "Cooling path: draft with Peace²<1 is routed to arif-asi.tune() then passes judge()."
+  - "Refusal path: Truth<floor or ΔS<0 triggers SABARPause and no seal_id."
+  - "EEE limiter: when Ψ close to threshold repeatedly, runloop() returns 'delay' once then succeeds post-tune."
+  - "pytest -q passes; coverage ≥ 85%."
+notes:
+  - "Use platform.psi.psi_score.Metrics + psi_from() + SABARPause."
+  - "Write at least one ledger entry per successful runloop() and assert append-only."

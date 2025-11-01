@@ -1,0 +1,31 @@
+tearframe:
+  - Sense
+  - Reflect
+  - Compare
+  - Align
+  - Integrate
+  - Express
+  - Reset
+sabar:
+  - Stop
+  - Acknowledge
+  - Breathe
+  - Adjust
+  - Resume
+phoenix_72:
+  hours: 72
+  action: "re-audit ΔS & Peace²; clear EchoDebt"
+cooling_ledger_fields:
+  - ts
+  - agent
+  - ΔS
+  - Peace²
+  - κᵣ
+  - Truth
+  - RASA
+  - Amanah
+  - TriWitness
+  - Ψ
+  - notes
+  - hash
+  - seal_id

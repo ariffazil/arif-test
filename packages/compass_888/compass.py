@@ -46,9 +46,11 @@ def route(task: str, draft: str, metrics: Mapping[str, Any] | Metrics) -> str:
     if peace2 < floors.get("peace2", 1.0) or kappa < floors.get("kappa_r", 0.95):
         return "arif-asi"
 
-    conductance = compute_conductance(task, draft)
-    if conductance < floors.get("kappa_r", 0.95):
-        return "arif-asi"
+    kappa_margin = floors.get("kappa_r", 0.95) + 0.01
+    if kappa <= kappa_margin:
+        conductance = compute_conductance(task, draft)
+        if conductance < floors.get("kappa_r", 0.95):
+            return "arif-asi"
 
     return "apex-prime"
 

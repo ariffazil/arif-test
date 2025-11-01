@@ -12,6 +12,7 @@ _POSITIVE_WORDS: frozenset[str] = frozenset(
         "calm",
         "care",
         "clarity",
+        "compassionate",
         "cooperate",
         "empathy",
         "gentle",

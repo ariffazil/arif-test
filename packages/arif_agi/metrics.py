@@ -40,7 +40,7 @@ def evaluate_metrics(task: str, draft: str) -> Metrics:
     delta_s = max(floors.get("deltaS", 0.0), _delta_s_score(task, draft))
     peace2 = min(1.5, max(floors.get("peace2", 1.0), tone["peace2_hint"] + 0.05))
     rasa = min(1.2, max(floors.get("rasa", 0.85), tone["rasa"] + 0.04))
-    kappa_r = min(1.5, max(kappa, floors.get("kappa_r", 0.95) + 0.03))
+    kappa_r = min(1.5, max(kappa, floors.get("kappa_r", 0.95)))
     amanah = max(
         floors.get("amanah", 0.9),
         min(1.2, 0.94 + 0.05 * truth + 0.05 * rasa),

@@ -12,29 +12,31 @@ from platform.psi.psi_score import (
 )
 from packages.arif_agi.agent import AGIResponse, respond
 from packages.arif_agi.metrics import evaluate_metrics
+from packages.arif_agi.planner import plan_and_reason
 from packages.apex_prime.judge import seal_if_lawful
 from packages.compass_888.compass import route
 from packages.eee_777.eee import limiter, sabar_orchestrate
 
 
-def _bootstrap(task: str, initial_draft: Optional[str]) -> tuple[str, Metrics, Optional[AGIResponse]]:
-    """Return the starting draft, metrics, and AGI response context."""
+def _bootstrap(
+    task: str, initial_draft: Optional[str]
+) -> tuple[str, Metrics, Dict[str, Any], Optional[AGIResponse]]:
+    """Return the starting draft, metrics, plan, and AGI response context."""
 
-    agi_outcome: Optional[AGIResponse] = respond(task)
-    if initial_draft:
-        draft = initial_draft
-        metrics = evaluate_metrics(task, draft)
-    else:
-        draft = agi_outcome.draft
-        metrics = agi_outcome.metrics
-    return draft, metrics, agi_outcome
+    if not initial_draft:
+        agi_outcome = respond(task)
+        return agi_outcome.draft, agi_outcome.metrics, agi_outcome.plan, agi_outcome
+
+    plan = plan_and_reason(task)
+    metrics = evaluate_metrics(task, initial_draft)
+    return initial_draft, metrics, plan, None
 
 
 def runloop(task: str, *, initial_draft: Optional[str] = None) -> Dict[str, Any]:
     """Execute the Mind→Compass→Heart→Soul→EEE flow."""
 
     floors = get_floors()
-    draft, metrics, agi_context = _bootstrap(task, initial_draft)
+    draft, metrics, plan_data, agi_context = _bootstrap(task, initial_draft)
 
     if initial_draft:
         if (
@@ -46,9 +48,16 @@ def runloop(task: str, *, initial_draft: Optional[str] = None) -> Dict[str, Any]
             )
 
     chosen = route(task, draft, metrics)
-    if chosen == "arif-agi" and agi_context is not None:
-        draft = agi_context.draft
-        metrics = agi_context.metrics
+    if chosen == "arif-agi":
+        if agi_context is None:
+            agi_context = respond(task)
+            draft = agi_context.draft
+            metrics = agi_context.metrics
+            plan_data = agi_context.plan
+        else:
+            draft = agi_context.draft
+            metrics = agi_context.metrics
+            plan_data = agi_context.plan
         chosen = route(task, draft, metrics)
 
     if chosen == "arif-asi":
@@ -67,7 +76,7 @@ def runloop(task: str, *, initial_draft: Optional[str] = None) -> Dict[str, Any]
             "psi": psi,
             "metrics": metrics,
             "seal_id": None,
-            "plan": agi_context.plan if agi_context else None,
+            "plan": plan_data,
         }
     if limit_decision == "block":
         raise SABARPause("EEE limiter blocked the run due to repeated near-threshold Ψ.")
@@ -80,7 +89,7 @@ def runloop(task: str, *, initial_draft: Optional[str] = None) -> Dict[str, Any]
         "psi": psi,
         "metrics": metrics,
         "seal_id": seal_id,
-        "plan": agi_context.plan if agi_context else None,
+        "plan": plan_data,
     }
 
 
